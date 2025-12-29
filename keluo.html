@@ -1,0 +1,551 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>科洛职业技能培训一键查</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #fff8f0 0%, #ffe8d6 100%);
+            color: #333;
+            line-height: 1.6;
+            padding: 15px;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 500px;
+            margin: 0 auto;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 20px;
+            padding: 15px;
+            background: linear-gradient(to right, #ff7e00, #ffa500);
+            color: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+        
+        h1 {
+            font-size: 1.5rem;
+            margin-bottom: 5px;
+        }
+        
+        .subtitle {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+        
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        }
+        
+        h2 {
+            font-size: 1.2rem;
+            margin-bottom: 15px;
+            color: #ff7e00;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #444;
+        }
+        
+        select, input, button {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 1rem;
+            background-color: #f9f9f9;
+            transition: all 0.3s;
+        }
+        
+        select:focus, input:focus {
+            border-color: #ff7e00;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(255, 126, 0, 0.2);
+        }
+        
+        button {
+            background: linear-gradient(to right, #ff7e00, #ffa500);
+            color: white;
+            border: none;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+        }
+        
+        .results {
+            display: none;
+            background: linear-gradient(to right, #fff5eb, #ffe8d6);
+            border-left: 4px solid #ff7e00;
+        }
+        
+        .result-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 12px;
+            padding-bottom: 12px;
+            border-bottom: 1px dashed #ffd8b5;
+        }
+        
+        .result-item:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+        
+        .result-label {
+            color: #666;
+        }
+        
+        .result-value {
+            font-weight: 600;
+            color: #ff7e00;
+        }
+        
+        .final-amount {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: #ff7e00;
+            text-align: center;
+            margin-top: 15px;
+            padding: 15px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+        
+        .income-amount {
+            color: #ff7e00;
+        }
+        
+        .course-info {
+            background: #f9f9f9;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+            font-size: 0.9rem;
+        }
+        
+        .info-row {
+            display: flex;
+            margin-bottom: 8px;
+        }
+        
+        .info-label {
+            width: 40%;
+            color: #666;
+        }
+        
+        .info-value {
+            width: 60%;
+            font-weight: 500;
+        }
+        
+        .policy-info {
+            font-size: 0.85rem;
+            color: #666;
+            margin-top: 20px;
+            padding: 15px;
+            background: #f9f9f9;
+            border-radius: 8px;
+        }
+        
+        .policy-info h3 {
+            color: #444;
+            margin-bottom: 10px;
+            font-size: 1rem;
+        }
+        
+        .policy-list {
+            padding-left: 20px;
+        }
+        
+        .policy-list li {
+            margin-bottom: 8px;
+        }
+        
+        .hidden {
+            display: none;
+        }
+        
+        .no-subsidy {
+            color: #ff7e00;
+            font-weight: 600;
+        }
+        
+        .subsidy-info {
+            color: #ff7e00;
+        }
+        
+        @media (min-width: 768px) {
+            .container {
+                max-width: 600px;
+            }
+            
+            h1 {
+                font-size: 1.8rem;
+            }
+            
+            .card {
+                padding: 25px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>科洛职业技能培训一键查</h1>
+            <p class="subtitle">精准计算培训补贴 · 助力职业技能提升</p>
+        </header>
+        
+        <div class="card">
+            <h2>课程查询与选择</h2>
+            <div class="form-group">
+                <label for="courseSelect">选择培训课程</label>
+                <select id="courseSelect">
+                    <option value="">-- 请选择培训课程 --</option>
+                    <!-- 课程选项将通过JavaScript动态生成 -->
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="personalStatus">个人状态</label>
+                <select id="personalStatus">
+                    <option value="">-- 请选择个人状态 --</option>
+                    <option value="在职">在职人员（补贴80%）</option>
+                    <option value="灵活就业">灵活就业人员（补贴100%）</option>
+                    <option value="失业">失业/登记失业人员（补贴100%）</option>
+                    <option value="残疾人">残疾人/退役士兵（补贴100%）</option>
+                    <option value="毕业学年学生">毕业学年学生（补贴80%）</option>
+                </select>
+            </div>
+            
+            <button id="calculateBtn">计算补贴额度</button>
+        </div>
+        
+        <div class="card results" id="resultsCard">
+            <h2>补贴计算结果</h2>
+            
+            <div class="course-info" id="courseDetails">
+                <div class="info-row">
+                    <div class="info-label">课程名称：</div>
+                    <div class="info-value" id="courseName">-</div>
+                </div>
+                <div class="info-row">
+                    <div class="info-label">上课形式：</div>
+                    <div class="info-value" id="classType">-</div>
+                </div>
+                <div class="info-row">
+                    <div class="info-label">培训费用：</div>
+                    <div class="info-value" id="courseFee">-</div>
+                </div>
+                <div class="info-row">
+                    <div class="info-label">补贴情况：</div>
+                    <div class="info-value" id="subsidyInfo">-</div>
+                </div>
+            </div>
+            
+            <div id="subsidyDetails">
+                <!-- 补贴详情将根据课程是否享受补贴动态显示 -->
+            </div>
+            
+            <div class="final-amount" id="finalAmountSection">
+                最终自费金额：<span id="finalAmount">-</span>
+            </div>
+        </div>
+        
+        <div class="policy-info">
+            <h3>上海市职业技能提升补贴政策要点</h3>
+            <ul class="policy-list">
+                <li><strong>补贴对象</strong>：本市户籍或在沪就业人员、灵活就业人员、残疾人、退役士兵、毕业学年学生等</li>
+                <li><strong>补贴分类</strong>：分为重点支持项目（A类）、急需紧缺项目（B类）、其它补贴项目（C类）</li>
+                <li><strong>补贴标准</strong>：根据具体课程和级别确定，部分课程可享受市补叠加区补</li>
+                <li><strong>申请方式</strong>：通过"随申办"APP或各区就业促进中心申请</li>
+                <li><strong>申请时间</strong>：自证书颁发之日起12个月内（毕业学年学生24个月内）</li>
+            </ul>
+            <p style="margin-top: 10px; font-style: italic;">注：本计算器基于上海市最新政策，具体执行以官方解释为准。</p>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const courseSelect = document.getElementById('courseSelect');
+            const personalStatus = document.getElementById('personalStatus');
+            const calculateBtn = document.getElementById('calculateBtn');
+            const resultsCard = document.getElementById('resultsCard');
+            const subsidyDetails = document.getElementById('subsidyDetails');
+            const finalAmountSection = document.getElementById('finalAmountSection');
+            const finalAmountSpan = document.getElementById('finalAmount');
+            
+            // 课程数据（基于提供的最新Excel数据）
+            const courses = [
+                {
+                    id: 1,
+                    name: '工业机器人系统操作员（四级）',
+                    classType: '线下班+线上班',
+                    fee: '4580',
+                    subsidyInfo: '人社紧缺目录补贴项目，市补叠加区补年最高3200元',
+                    maxSubsidy: 3200
+                },
+                {
+                    id: 2,
+                    name: '工业机器人系统操作员（三级）',
+                    classType: '线下班+线上班',
+                    fee: '5580',
+                    subsidyInfo: '人社紧缺目录补贴项目，市补叠加区补年最高4050元',
+                    maxSubsidy: 4050
+                },
+                {
+                    id: 3,
+                    name: 'AOPA无人机驾驶员',
+                    classType: '线下班3天',
+                    fee: '4800',
+                    subsidyInfo: '非补贴课程',
+                    maxSubsidy: 0
+                },
+                {
+                    id: 4,
+                    name: '中级经济师（人力资源/工商管理）',
+                    classType: '线上班',
+                    fee: '2580',
+                    subsidyInfo: '非补贴课程',
+                    maxSubsidy: 0
+                },
+                {
+                    id: 5,
+                    name: '中级经济师（人力资源/工商管理）',
+                    classType: '线下班',
+                    fee: '4680',
+                    subsidyInfo: '非补贴课程',
+                    maxSubsidy: 0
+                },
+                {
+                    id: 6,
+                    name: '劳动关系协调师（四级）',
+                    classType: '线上班+线下复习',
+                    fee: '2550',
+                    subsidyInfo: '人社补贴项目 市补叠加区补最高1400元',
+                    maxSubsidy: 1400
+                },
+                {
+                    id: 7,
+                    name: '劳动关系协调师（三级）',
+                    classType: '线上班+线下复习',
+                    fee: '2700',
+                    subsidyInfo: '人社补贴项目 市补叠加区补最高1400元',
+                    maxSubsidy: 1400
+                },
+                {
+                    id: 8,
+                    name: '劳动关系协调师（三级）',
+                    classType: '线上班',
+                    fee: '1800',
+                    subsidyInfo: '人社补贴项目 市补叠加区补最高1400元',
+                    maxSubsidy: 1400
+                },
+                {
+                    id: 9,
+                    name: '企业人力资源管理师（三级）',
+                    classType: '线上班',
+                    fee: '2660',
+                    subsidyInfo: '人社补贴项目 市补叠加区补最高1400元',
+                    maxSubsidy: 1400
+                },
+                {
+                    id: 10,
+                    name: '助理社工师（社会工作者初级）',
+                    classType: '线下班',
+                    fee: '4000',
+                    subsidyInfo: '非补贴课程',
+                    maxSubsidy: 0
+                },
+                {
+                    id: 11,
+                    name: '社会工作师（社会工作者中级）',
+                    classType: '线下班',
+                    fee: '5500',
+                    subsidyInfo: '非补贴课程',
+                    maxSubsidy: 0
+                },
+                {
+                    id: 12,
+                    name: '课程配套材料（社会工作者初级）',
+                    classType: '初级',
+                    fee: '199',
+                    subsidyInfo: '非补贴课程',
+                    maxSubsidy: 0
+                },
+                {
+                    id: 13,
+                    name: '课程配套材料（社会工作者中级）',
+                    classType: '中级',
+                    fee: '259',
+                    subsidyInfo: '非补贴课程',
+                    maxSubsidy: 0
+                },
+                {
+                    id: 14,
+                    name: '实效摄影基础课',
+                    classType: '线下班',
+                    fee: '2280',
+                    subsidyInfo: '非补贴课程',
+                    maxSubsidy: 0
+                }
+            ];
+            
+            // 初始化课程选择下拉框
+            function initCourseSelect() {
+                courses.forEach(course => {
+                    const option = document.createElement('option');
+                    option.value = course.id;
+                    // 只显示课程名称和班型，不显示费用
+                    option.textContent = `${course.name} - ${course.classType}`;
+                    courseSelect.appendChild(option);
+                });
+            }
+            
+            // 补贴比例映射
+            const subsidyRates = {
+                '在职': 0.8,
+                '灵活就业': 1.0,
+                '失业': 1.0,
+                '残疾人': 1.0,
+                '毕业学年学生': 0.8
+            };
+            
+            // 获取课程费用中的最小值（用于计算）
+            function getMinFee(feeStr) {
+                if (feeStr.includes('-')) {
+                    return parseInt(feeStr.split('-')[0]);
+                }
+                return parseInt(feeStr);
+            }
+            
+            // 获取课程费用中的最大值
+            function getMaxFee(feeStr) {
+                if (feeStr.includes('-')) {
+                    return parseInt(feeStr.split('-')[1]);
+                }
+                return parseInt(feeStr);
+            }
+            
+            // 计算按钮点击事件
+            calculateBtn.addEventListener('click', function() {
+                const courseId = parseInt(courseSelect.value);
+                const status = personalStatus.value;
+                
+                if (!courseId || !status) {
+                    alert('请选择课程和个人状态');
+                    return;
+                }
+                
+                const course = courses.find(c => c.id === courseId);
+                const subsidyRate = subsidyRates[status];
+                
+                // 更新课程信息
+                document.getElementById('courseName').textContent = course.name;
+                document.getElementById('classType').textContent = course.classType;
+                document.getElementById('courseFee').textContent = course.fee + '元';
+                document.getElementById('subsidyInfo').textContent = course.subsidyInfo;
+                
+                // 判断是否为补贴课程
+                if (course.subsidyInfo === '非补贴课程') {
+                    document.getElementById('subsidyInfo').className = 'info-value no-subsidy';
+                    
+                    // 非补贴课程显示
+                    subsidyDetails.innerHTML = `
+                        <div class="result-item">
+                            <span class="result-label">补贴状态：</span>
+                            <span class="result-value no-subsidy">不享受政府补贴</span>
+                        </div>
+                    `;
+                    
+                    // 最终自费金额等于课程费用
+                    finalAmountSection.innerHTML = `最终自费金额：<span id="finalAmount">${course.fee}元</span>`;
+                    finalAmountSpan.className = '';
+                } else {
+                    document.getElementById('subsidyInfo').className = 'info-value subsidy-info';
+                    
+                    // 计算补贴金额
+                    const actualSubsidy = Math.min(course.maxSubsidy * subsidyRate, getMinFee(course.fee));
+                    
+                    // 计算费用范围
+                    const minNetAmount = getMinFee(course.fee) - actualSubsidy;
+                    const maxNetAmount = getMaxFee(course.fee) - actualSubsidy;
+                    
+                    // 补贴课程显示
+                    subsidyDetails.innerHTML = `
+                        <div class="result-item">
+                            <span class="result-label">个人补贴比例：</span>
+                            <span class="result-value">${(subsidyRate * 100)}%</span>
+                        </div>
+                        <div class="result-item">
+                            <span class="result-label">可领取补贴：</span>
+                            <span class="result-value">${actualSubsidy}元</span>
+                        </div>
+                    `;
+                    
+                    // 判断最终显示
+                    if (course.fee.includes('-')) {
+                        // 费用区间的情况
+                        if (minNetAmount >= 0 && maxNetAmount >= 0) {
+                            finalAmountSection.innerHTML = `最终自费金额：<span id="finalAmount">${minNetAmount}-${maxNetAmount}元</span>`;
+                        } else if (minNetAmount < 0 && maxNetAmount >= 0) {
+                            finalAmountSection.innerHTML = `最终补贴结果：<span id="finalAmount" class="income-amount">收入${-minNetAmount}元至自费${maxNetAmount}元</span>`;
+                        } else {
+                            finalAmountSection.innerHTML = `最终补贴结果：<span id="finalAmount" class="income-amount">收入${-maxNetAmount}-${-minNetAmount}元</span>`;
+                        }
+                    } else {
+                        // 单一费用的情况
+                        if (minNetAmount >= 0) {
+                            finalAmountSection.innerHTML = `最终自费金额：<span id="finalAmount">${minNetAmount}元</span>`;
+                        } else {
+                            finalAmountSection.innerHTML = `最终补贴结果：<span id="finalAmount" class="income-amount">收入${-minNetAmount}元</span>`;
+                        }
+                    }
+                }
+                
+                // 显示结果卡片
+                resultsCard.style.display = 'block';
+                
+                // 滚动到结果区域
+                resultsCard.scrollIntoView({ behavior: 'smooth' });
+            });
+            
+            // 初始化
+            initCourseSelect();
+            resultsCard.style.display = 'none';
+        });
+    </script>
+</body>
+</html>
